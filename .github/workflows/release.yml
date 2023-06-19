@@ -5,12 +5,17 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - closed
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
-    if: ${{ github.event.pull_request.user.login != 'github-actions[bot]' }}
+    if: ${{ github.event.pull_request.user.login != 'github-actions[bot]' && github.event.pull_request.merged == false}}
 
     steps:
       - name: Checkout repository
