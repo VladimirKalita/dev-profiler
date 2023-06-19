@@ -11,9 +11,7 @@ on:
     types:
       - opened
       - synchronize
-    # Exclude pull requests created by the workflow
-    paths-ignore:
-      - '.github/workflows/release.yml'
+
 
 jobs:
   build:
@@ -25,12 +23,12 @@ jobs:
     
       - name: Check if pull request event
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "Pull request event. Skipping workflow."
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.event.pull_request.base.ref }}" == "main" ] && [ "${{ github.actor }}" == "${{ github.event.pull_request.user.login }}" ]; then
+            echo "Pull request event from workflow owner. Skipping workflow."
             exit 78
           fi
           
-          echo "Not a pull request event. Proceeding with the workflow."
+          echo "Not a pull request event from workflow owner. Proceeding with the workflow."
     
     
       - name: Checkout repository
