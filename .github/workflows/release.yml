@@ -23,14 +23,23 @@ jobs:
       - name: Check for version changes
         id: version-check
         run: |
-          previous_version=$(git show HEAD^:Cargo.toml | grep -oP '(?<=version = ")[^"]+')
-          current_version=$(cat Cargo.toml | grep -oP '(?<=version = ")[^"]+')
+          git log -n 2 --pretty=format:%H | sed -n '1!p' > commits.txt
+          previous_commit=$(head -n 1 commits.txt)
+          current_commit=$(head -n 2 commits.txt | tail -n 1)
+          rm commits.txt
 
-          if [[ "$previous_version" != "$current_version" ]]; then
-            echo "::set-output name=version-changed::true"
-            exit 0
-          else
+          if [[ -z "$previous_commit" ]] || [[ "$previous_commit" == "$current_commit" ]]; then
             echo "::set-output name=version-changed::false"
+          else
+            previous_version=$(git show "$previous_commit":Cargo.toml | grep -oP '(?<=version = ")[^"]+')
+            current_version=$(cat Cargo.toml | grep -oP '(?<=version = ")[^"]+')
+
+            if [[ "$previous_version" != "$current_version" ]]; then
+              echo "::set-output name=version-changed::true"
+              exit 0
+            else
+              echo "::set-output name=version-changed::false"
+            fi
           fi
 
       - name: Run Build Script
