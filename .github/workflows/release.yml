@@ -8,28 +8,17 @@ on:
  pull_request:
     branches:
       - main
-    types:
-      - opened
-      - synchronize
+    paths-ignore:
+      - '**/*.toml'
 
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
-#     if: ${{ github.event.pull_request.user.login != 'github-actions[bot]' && github.event.pull_request.merged == false}}
+
 
     steps:
-    
-      - name: Check if pull request event
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.event.pull_request.base.ref }}" == "main" ] && [ "${{ github.actor }}" == "${{ github.event.pull_request.user.login }}" ]; then
-            echo "Pull request event from workflow owner. Skipping workflow."
-            exit 78
-          fi
-          
-          echo "Not a pull request event from workflow owner. Proceeding with the workflow."
-    
     
       - name: Checkout repository
         uses: actions/checkout@v2
