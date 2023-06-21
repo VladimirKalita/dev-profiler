@@ -19,11 +19,20 @@ jobs:
       - name: Print Old and New Cargo.toml Versions
         id: cargo_version
         run: |
-          cd devprofiler
-          echo "Old Version:"
-          git show origin/${{ github.event.pull_request.base.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}'
-          echo "New Version:"
-          git show origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}'
+           cd devprofiler
+           echo "Old Version:"
+           v1=$(git show origin/${{ github.event.pull_request.base.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+           echo $v1
+           echo "New Version:"
+           v2=$(git show origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+           echo $v2
+
+           if [ "$v1" == "$v2" ]; then
+             echo "Versions are the same."
+           else
+             echo "Versions are different."
+           fi
+
 
       - name: Compare Versions
         id: compare_versions
