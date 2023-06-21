@@ -1,0 +1,18 @@
+name: Pull Request Merge Workflow
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  detectMerge:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check if pull request was merged
+        if: github.event.pull_request.merged == true
+        run: |
+          echo "Pull request was merged."
+          echo "Source branch: ${{ github.event.pull_request.head.ref }}"
+          echo "Target branch: ${{ github.event.pull_request.base.ref }}"
