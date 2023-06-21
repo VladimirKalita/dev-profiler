@@ -1,19 +1,47 @@
-name: Print Cargo.toml Version
+name: Pull Request Checks
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 jobs:
-  print_version:
+  check_version:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Print Cargo.toml Version
+      - name: Print Old and New Cargo.toml Versions
+        id: cargo_version
         run: |
-          cd devprofiler
+          echo "Old Version:"
+          git show HEAD:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}'
+          echo "New Version:"
           cat Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}'
+
+      - name: Compare Versions
+        id: compare_versions
+        run: |
+          echo "::set-output name=version_changed::$(test '${{ steps.cargo_version.outputs.version }}' != '${{ steps.cargo_version.outputs.version }}'; echo $?)"
+
+      - name: Comment on Pull Request
+        if: ${{ needs.compare_versions.outputs.version_changed == '0' }}
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const comment = `
+            The version in Cargo.toml has been modified in this pull request.
+
+            Old Version: ${{ steps.cargo_version.outputs.version }}
+            New Version: ${{ steps.cargo_version.outputs.version }}
+            `;
+
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
