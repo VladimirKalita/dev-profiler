@@ -31,7 +31,7 @@ jobs:
             echo "Versions are the same."
           else
             echo "Versions are different."
-          }
+          fi
 
       - name: Check Versions on Merge
         if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged
@@ -48,4 +48,4 @@ jobs:
             echo "Versions are the same on merge."
           else
             echo "Versions are different on merge."
-          }
+          fi
