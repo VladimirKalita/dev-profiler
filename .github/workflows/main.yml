@@ -19,42 +19,33 @@ jobs:
       - name: Print Old and New Cargo.toml Versions
         id: cargo_version
         run: |
-           cd devprofiler
-           echo "Old Version:"
-           v1=$(git show origin/${{ github.event.pull_request.base.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
-           echo $v1
-           echo "New Version:"
-           v2=$(git show origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
-           echo $v2
+          cd devprofiler
+          echo "Old Version:"
+          v1=$(git show origin/${{ github.event.pull_request.base.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          echo $v1
+          echo "New Version:"
+          v2=$(git show origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          echo $v2
 
-           if [ "$v1" == "$v2" ]; then
-             echo "Versions are the same."
-           else
-             echo "Versions are different."
-           fi
+          if [ "$v1" == "$v2" ]; then
+            echo "Versions are the same."
+          else
+            echo "Versions are different."
+          }
 
-
-      - name: Compare Versions
-        id: compare_versions
+      - name: Check Versions on Merge
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged
         run: |
-          echo "::set-output name=version_changed::$(test '${{ steps.cargo_version.outputs.version }}' != '${{ steps.cargo_version.outputs.version }}'; echo $?)"
+          cd devprofiler
+          echo "Old Version on Merge:"
+          v1=$(git show origin/main:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          echo $v1
+          echo "New Version on Merge:"
+          v2=$(git show origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          echo $v2
 
-      - name: Comment on Pull Request
-        if: ${{ needs.compare_versions.outputs.version_changed == '0' }}
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const comment = `
-            The version in Cargo.toml has been modified in this pull request.
-
-            Old Version: ${{ steps.cargo_version.outputs.version }}
-            New Version: ${{ steps.cargo_version.outputs.version }}
-            `;
-
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+          if [ "$v1" == "$v2" ]; then
+            echo "Versions are the same on merge."
+          else
+            echo "Versions are different on merge."
+          }
