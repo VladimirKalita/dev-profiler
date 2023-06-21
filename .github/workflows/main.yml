@@ -26,7 +26,8 @@ jobs:
           v1=$(git show FETCH_HEAD:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
           echo $v1
           echo "New Version:"      
-          v2=$(git log -n 2 --pretty=format:%H | sed -n '2p' | xargs git show:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          previous_commit=$(git log -n 2 --pretty=format:%H | sed -n '2p')
+          v2=$(git show $previous_commit:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
           echo $v2
 
           if [ "$v1" == "$v2" ]; then
