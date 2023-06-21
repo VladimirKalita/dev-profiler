@@ -14,17 +14,19 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Fetch remote branches
-        run: git fetch origin +refs/heads/*:refs/remotes/origin/*
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          git fetch origin ${{ github.event.pull_request.head.ref }}
 
       - name: Print Old and New Cargo.toml Versions
         id: cargo_version
         run: |
           cd devprofiler
           echo "Old Version:"
-          v1=$(git show origin/${{ github.event.pull_request.base.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          v1=$(git show FETCH_HEAD:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
           echo $v1
           echo "New Version:"
-          v2=$(git show origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          v2=$(git show FETCH_HEAD^:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
           echo $v2
 
           if [ "$v1" == "$v2" ]; then
