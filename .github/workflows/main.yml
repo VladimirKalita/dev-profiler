@@ -16,6 +16,7 @@ jobs:
       - name: Print Old and New Cargo.toml Versions
         id: cargo_version
         run: |
+          cd devprofiler
           echo "Old Version:"
           git show origin/${{ github.event.pull_request.base.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}'
           echo "New Version:"
