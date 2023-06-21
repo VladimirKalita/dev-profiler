@@ -5,8 +5,8 @@ on:
  push:
     branches:
       - main
-#     paths-ignore:
-#       - '**/*.toml'
+    paths-ignore:
+      - '**/*.toml'
 
 
 jobs:
@@ -20,27 +20,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Check for version changes
-        id: version-check
-        run: |
-          git log -n 2 --pretty=format:%H | sed -n '1!p' > commits.txt
-          previous_commit=$(head -n 1 commits.txt)
-          current_commit=$(head -n 2 commits.txt | tail -n 1)
-          rm commits.txt
+#       - name: Check for version changes
+#         id: version-check
+#         run: |
+#           git log -n 2 --pretty=format:%H | sed -n '1!p' > commits.txt
+#           previous_commit=$(head -n 1 commits.txt)
+#           current_commit=$(head -n 2 commits.txt | tail -n 1)
+#           rm commits.txt
 
-          if [[ -z "$previous_commit" ]] || [[ "$previous_commit" == "$current_commit" ]]; then
-            echo "::set-output name=version-changed::false"
-          else
-            previous_version=$(git show "$previous_commit":Cargo.toml | grep -oP '(?<=version = ")[^"]+')
-            current_version=$(cat Cargo.toml | grep -oP '(?<=version = ")[^"]+')
+#           if [[ -z "$previous_commit" ]] || [[ "$previous_commit" == "$current_commit" ]]; then
+#             echo "::set-output name=version-changed::false"
+#           else
+#             previous_version=$(git show "$previous_commit":Cargo.toml | grep -oP '(?<=version = ")[^"]+')
+#             current_version=$(cat Cargo.toml | grep -oP '(?<=version = ")[^"]+')
 
-            if [[ "$previous_version" != "$current_version" ]]; then
-              echo "::set-output name=version-changed::true"
-              exit 0
-            else
-              echo "::set-output name=version-changed::false"
-            fi
-          fi
+#             if [[ "$previous_version" != "$current_version" ]]; then
+#               echo "::set-output name=version-changed::true"
+#               exit 0
+#             else
+#               echo "::set-output name=version-changed::false"
+#             fi
+#           fi
 
       - name: Run Build Script
         run: |
