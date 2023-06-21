@@ -4,6 +4,8 @@ on:
   pull_request:
     types:
       - closed
+    paths: 
+      - '**/*.toml'
 
 jobs:
   check_version:
