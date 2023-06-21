@@ -1,7 +1,7 @@
 name: Pull Request Checks
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -31,21 +31,4 @@ jobs:
             echo "Versions are the same."
           else
             echo "Versions are different."
-          fi
-
-      - name: Check Versions on Merge
-        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged
-        run: |
-          cd devprofiler
-          echo "Old Version on Merge:"
-          v1=$(git show origin/main:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
-          echo $v1
-          echo "New Version on Merge:"
-          v2=$(git show origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
-          echo $v2
-
-          if [ "$v1" == "$v2" ]; then
-            echo "Versions are the same on merge."
-          else
-            echo "Versions are different on merge."
-          fi
+          }
