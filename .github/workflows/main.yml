@@ -31,4 +31,4 @@ jobs:
             echo "Versions are the same."
           else
             echo "Versions are different."
-          }
+          fi
