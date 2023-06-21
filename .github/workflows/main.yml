@@ -1,19 +1,51 @@
-name: Print Cargo.toml Version
+name: Pull Request Checks
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 jobs:
-  print_version:
+  check_version:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Print Cargo.toml Version
+      - name: Fetch remote branches
+        run: git fetch origin +refs/heads/*:refs/remotes/origin/*
+
+      - name: Print Old and New Cargo.toml Versions
+        id: cargo_version
         run: |
           cd devprofiler
-          cat Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}'
+          echo "Old Version:"
+          v1=$(git show origin/${{ github.event.pull_request.base.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          echo $v1
+          echo "New Version:"
+          v2=$(git show origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          echo $v2
+
+          if [ "$v1" == "$v2" ]; then
+            echo "Versions are the same."
+          else
+            echo "Versions are different."
+          fi
+
+      - name: Check Versions on Merge
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged
+        run: |
+          cd devprofiler
+          echo "Old Version on Merge:"
+          v1=$(git show origin/main:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          echo $v1
+          echo "New Version on Merge:"
+          v2=$(git show origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}')
+          echo $v2
+
+          if [ "$v1" == "$v2" ]; then
+            echo "Versions are the same on merge."
+          else
+            echo "Versions are different on merge."
+          fi
