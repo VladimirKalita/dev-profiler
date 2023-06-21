@@ -18,9 +18,9 @@ jobs:
         run: |
           cd devprofiler
           echo "Old Version:"
-          git show origin/${{ github.event.pull_request.base.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}'
+          git show remotes/origin/${{ github.event.pull_request.base.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}'
           echo "New Version:"
-          git show origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}'
+          git show remotes/origin/${{ github.event.pull_request.head.ref }}:./Cargo.toml | grep -m 1 'version' | awk -F '"' '{print $2}'
 
       - name: Compare Versions
         id: compare_versions
