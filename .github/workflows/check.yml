@@ -12,7 +12,12 @@ jobs:
     
     steps:
       - name: Check if pull request was merged
-        if: ${{ github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref != 'update-cargo-toml' }}
+        if: ${{ github.event.pull_request.base.ref != 'main' || github.event.pull_request.head.ref == 'update-cargo-toml' }}
+        run: |
+          echo "bye"
+          exit 0
+          
+      - name: do it 
         run: |
           echo "Pull request was merged."
           echo "Source branch: ${{ github.event.pull_request.head.ref }}"
