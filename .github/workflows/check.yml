@@ -7,11 +7,12 @@ on:
 
 jobs:
   detectMerge:
-    if: github.event.pull_request.merged == true &&  ${{ github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref != 'update-cargo-toml' }}
+    if: github.event.pull_request.merged == true 
     runs-on: ubuntu-latest
     
     steps:
       - name: Check if pull request was merged
+        if: ${{ github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref != 'update-cargo-toml' }}
         run: |
           echo "Pull request was merged."
           echo "Source branch: ${{ github.event.pull_request.head.ref }}"
