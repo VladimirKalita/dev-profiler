@@ -21,6 +21,7 @@ jobs:
           exit 0
           
       - name: do it 
+        id: set_output
         run: |
           echo "Pull request was merged."
           echo "Source branch: ${{ github.event.pull_request.head.ref }}"
