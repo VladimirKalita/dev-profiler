@@ -1,6 +1,6 @@
 [package]
 name = "devprofiler"
-version = "0.2.26"
+version = "0.2.27"
 edition = "2021"
 authors = ["Tapish Rathore <tapish@vibinex.com>"]
 license = "GPL-3.0-or-later"
