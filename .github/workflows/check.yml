@@ -17,7 +17,6 @@ jobs:
       - name: Check if pull request was merged
         if: ${{  github.event.pull_request.head.ref == 'update-cargo-toml' }}
         run: |
-          echo "::set-output name = che::true"
           echo "bye"
           exit 0
           
@@ -26,10 +25,11 @@ jobs:
           echo "Pull request was merged."
           echo "Source branch: ${{ github.event.pull_request.head.ref }}"
           echo "Target branch: ${{ github.event.pull_request.base.ref }}"
+          echo "::set-output name=che::true"
     
   build:
     needs: [detectMerge]
-    if: needs.job01.outputs.che == 'true'
+    if: needs.job01.outputs.run_rest_jobs == 'true'
     runs-on: ubuntu-latest
 
     steps:
