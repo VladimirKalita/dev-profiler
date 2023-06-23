@@ -58,8 +58,8 @@ jobs:
 
       - name: Run Build Script
         run: |
-           git config user.name "VladimirKalita"
-           git config user.email "<rishabh21@iitk.ac.in>"
+           git config user.name "GitHub Actions Bot"
+           git config user.email "<>"
            
       - name: run script
         run: |
